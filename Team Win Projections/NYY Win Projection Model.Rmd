@@ -1,0 +1,275 @@
+---
+title: "NYY Win Projection Model"
+author: "Justin Dritschel"
+date: "2024-03-01"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+Let's load in the Yankees 2023 Roster and then see who we can cut off of it.
+
+```{r}
+player <- c("Clayton Andrews", "Clayton Beeter", "Gerrit Cole", "Nestor Cortes", "Scott Effross", "Caleb Ferguson", "Luis Gil", "Victor Gonzalez", "Yoendrys Gomez", "Ian Hamilton", "Clay Holmes", "Tommy Kahnle", "Jonathan Loaisiga", "Ron Marinaccio", "Mckinley Moore","Cody Morris","Cody Poteet","Nick Ramirez","Carlos Rodon","Clarke Schmidt","Marcus Stroman","Lou Trivino","Luke Weaver","Carlos Narvaez","Agustin Ramirez","Ben Rortvedt","Jose Trevino","Austin Wells","DJ LeMahieu","Oswald Peraza", "Anthony Rizzo", "Gleyber Torres","Jorbit Vivas","Anthony Volpe","Oswaldo Cabrera","Jasson Dominguez","Trent Grisham","Aaron Judge","Everson Pereira","Juan Soto","Alex Verdugo", "Jahmai Jones","Giancarlo Stanton")
+length(player)
+```
+
+
+```{r}
+yankees23 <- read_csv("Name,Age,,B,T,Ht,Wt,DoB,Yrs,G,GS,Batting,Defense,P,C,1B,2B,3B,SS,LF,CF,RF,OF,DH,PH,PR,WAR,Salary,,Name-additional
+Albert Abreu,27,do DO,R,R,6 2,190,Sep 26 1995,4,45,0,0,45,45,0,0,0,0,0,0,0,0,0,0,0,0,-0.2,$738700,,abreual01
+                      Greg Allen,30,us US,B,R,6 0,187,Mar 15 1993,7,22,6,22,19,0,0,0,0,0,0,11,3,5,19,1,1,10,0.0,,,allengr01
+Harrison Bader,29,us US,R,R,6 0,210,Jun 3 1994,7,84,76,84,83,0,0,0,0,0,0,0,83,0,83,0,4,0,0.9,,,baderha01
+                      Matt Bowman,32,us US,R,R,6 0,185,May 31 1991,5,3,0,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,-0.2,,,bowmama01
+Colten Brewer,30,us US,R,R,6 4,222,Oct 29 1992,5,3,0,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0.0,,,breweco01
+Jhony Brito,25,do DO,R,R,6 2,210,Feb 17 1998,1st,25,13,0,25,25,0,0,0,0,0,0,0,0,0,0,0,0,0.7,,,britojh01
+                      Oswaldo Cabrera,24,ve VE,B,R,5 11,200,Mar 1 1999,2,115,80,115,108,0,0,1,6,15,5,51,1,49,92,3,5,9,-1.5,$742100,,cabreos01
+Willie Calhoun,28,us US,L,R,5 8,205,Nov 4 1994,7,44,36,44,12,0,0,0,0,0,0,3,0,9,12,26,7,0,-0.2,,,calhowi01
+Gerrit Cole,32,us US,R,R,6 4,220,Sep 8 1990,11,33,33,0,33,33,0,0,0,0,0,0,0,0,0,0,0,0,7.4,$36000000,All-Star,colege01
+                      Franchy Cordero,28,do DO,L,R,6 3,225,Sep 2 1994,7,24,19,24,22,0,0,0,0,0,0,4,0,18,22,0,3,0,-0.1,$1000000,,cordefr02
+Jimmy Cordero,31,do DO,R,R,6 4,245,Oct 19 1991,4,31,1,0,31,31,0,0,0,0,0,0,0,0,0,0,0,0,0.5,$720000,,cordeji01
+Nestor Cortes,28,cu CU,R,L,5 11,210,Dec 10 1994,6,12,12,0,12,12,0,0,0,0,0,0,0,0,0,0,0,0,0.5,$3200000,,cortene01
+                      Jasson Dominguez,20,do DO,B,R,5 9,190,Feb 7 2003,1st,8,8,8,8,0,0,0,0,0,0,0,8,0,8,0,0,0,0.2,,,dominja01
+Josh Donaldson,37,us US,R,R,6 1,210,Dec 8 1985,13,34,30,33,24,1,0,0,0,23,0,0,0,0,0,7,3,0,0.0,$21750000,,donaljo02
+Estevan Florial,25,do DO,L,R,6 1,195,Nov 25 1997,4,19,18,19,19,0,0,0,0,0,0,0,19,0,19,0,0,1,0.0,,,flories01
+                      Deivi García,24,do DO,R,R,5 9,190,May 19 1999,3,2,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0.1,,,garcide01
+Domingo Germán,30,do DO,R,R,6 2,181,Aug 4 1992,6,20,19,0,20,20,0,0,0,0,0,0,0,0,0,0,0,0,0.7,$2600000,,germado01
+Yoendrys Gomez,23,ve VE,R,R,6 3,212,Oct 15 1999,1st,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0.1,,,gomezyo01
+                      Ian Hamilton,28,us US,R,R,6 1,200,Jun 16 1995,4,39,3,0,39,39,0,0,0,0,0,0,0,0,0,0,0,0,1.6,,,hamilia01
+Aaron Hicks,33,us US,B,R,6 1,205,Oct 2 1989,11,28,20,28,25,0,0,0,0,0,0,19,7,0,25,2,1,4,-0.5,,,hicksaa01
+Kyle Higashioka,33,us US,R,R,6 1,202,Apr 20 1990,7,92,72,92,90,0,90,0,0,0,0,0,0,0,0,2,3,0,-0.3,$1462500,,higasky01
+                      Clay Holmes,30,us US,R,R,6 5,245,Mar 27 1993,6,66,0,0,66,66,0,0,0,0,0,0,0,0,0,0,0,0,1.8,$3300000,,holmecl01
+Aaron Judge,31,us US,R,R,6 7,282,Apr 26 1992,8,106,104,106,67,0,0,0,0,0,0,0,18,54,67,38,2,0,4.5,$40000000,All-Star,judgeaa01
+Tommy Kahnle,33,us US,R,R,6 1,230,Aug 7 1989,9,42,0,0,42,42,0,0,0,0,0,0,0,0,0,0,0,0,1.1,$5750000,,kahnlto01
+                      Isiah Kiner-Falefa,28,us US,R,R,5 11,190,Mar 23 1995,6,115,88,113,109,4,0,0,1,31,1,37,41,7,78,0,10,5,0.1,$6000000,,kineris01
+Michael King,28,us US,R,R,6 3,210,May 25 1995,5,49,9,0,49,49,0,0,0,0,0,0,0,0,0,0,0,0,3.2,$1300000,,kingmi01
+Matt Krook,28,us US,L,L,6 4,225,Oct 21 1994,1st,4,0,0,4,4,0,0,0,0,0,0,0,0,0,0,0,0,-0.4,,,krookma01
+                      DJ LeMahieu,34,us US,R,R,6 4,220,Jul 13 1988,13,136,130,136,128,0,0,56,9,69,0,0,0,0,0,4,6,0,1.3,$15000000,,lemahdj01
+Jonathan Loaisiga,28,ni NI,R,R,5 11,165,Nov 2 1994,6,17,0,0,17,17,0,0,0,0,0,0,0,0,0,0,0,0,0.4,$2260000,,loaisjo01
+Ron Marinaccio,27,us US,R,R,6 2,205,Jul 1 1995,2,45,0,0,45,45,0,0,0,0,0,0,0,0,0,0,0,0,0.4,$739900,,marinro01
+                      Zach McAllister,35,us US,R,R,6 6,240,Dec 8 1987,9,7,0,0,7,7,0,0,0,0,0,0,0,0,0,0,0,0,-0.4,,,mcallza01
+Billy McKinney,28,us US,L,L,5 11,205,Aug 23 1994,6,48,38,48,41,0,0,1,0,0,0,33,9,10,41,0,7,1,0.2,,,mckinbi01
+Keynan Middleton,29,us US,R,R,6 3,230,Sep 12 1993,7,12,0,0,12,12,0,0,0,0,0,0,0,0,0,0,0,0,0.4,,,middlke01
+                      Anthony Misiewicz,28,us US,R,L,6 1,196,Nov 1 1994,4,3,0,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,-0.2,,,misiean01
+Frankie Montas,30,do DO,R,R,6 2,255,Mar 21 1993,8,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0.1,$7500000,,montafr02
+Wandy Peralta,31,do DO,L,L,6 0,227,Jul 27 1991,8,63,0,0,63,63,0,0,0,0,0,0,0,0,0,0,0,0,1.4,$3350000,,peralwa01
+                      Oswald Peraza,23,ve VE,R,R,6 0,200,Jun 15 2000,2,52,48,52,50,0,0,0,10,36,6,0,0,0,0,1,2,2,-0.7,,,perazos02
+Everson Pereira,22,ve VE,R,R,5 11,191,Apr 10 2001,1st,27,26,27,27,0,0,0,0,0,0,27,0,0,27,0,0,0,-0.6,,,pereiev01
+Nick Ramirez,33,us US,L,L,6 4,232,Aug 1 1989,4,32,0,0,32,32,0,0,0,0,0,0,0,0,0,0,0,0,0.9,,,ramirni01
+                      Anthony Rizzo,33,us US,L,L,6 3,240,Aug 8 1989,13,99,99,99,92,0,0,92,0,0,0,0,0,0,0,7,0,0,0.5,$17000000,,rizzoan01
+Carlos Rodon,30,us US,L,L,6 2,255,Dec 10 1992,9,14,14,0,14,14,0,0,0,0,0,0,0,0,0,0,0,0,-0.9,$22833333,,rodonca01
+Ben Rortvedt,25,us US,L,R,5 9,191,Sep 25 1997,2,32,24,32,31,0,31,0,0,0,0,0,0,0,0,1,1,1,-0.2,,,rortvbe01
+                      Clarke Schmidt,27,us US,R,R,6 1,200,Feb 20 1996,4,33,32,0,33,33,0,0,0,0,0,0,0,0,0,0,0,0,0.7,$740475,,schmicl01
+Luis Severino,29,do DO,R,R,6 2,218,Feb 20 1994,8,19,18,0,19,19,0,0,0,0,0,0,0,0,0,0,0,0,-1.5,$15000000,,severlu01
+Giancarlo Stanton,33,us US,R,R,6 6,245,Nov 8 1989,14,101,98,101,33,0,0,0,0,0,0,2,0,31,33,65,3,0,-0.8,$32000000,,stantmi03
+                      Gleyber Torres,26,ve VE,R,R,6 1,205,Dec 13 1996,6,158,153,158,145,0,0,0,145,0,0,0,0,0,0,12,4,1,2.9,$9950000,,torregl01
+Jose Trevino,30,us US,R,R,5 10,215,Nov 28 1992,6,55,49,55,54,0,54,0,0,0,0,0,0,0,0,0,1,0,0.5,$2360000,,trevijo01
+Randy Vásquez,24,do DO,R,R,6 0,165,Nov 3 1998,1st,11,5,0,11,11,0,0,0,0,0,0,0,0,0,0,0,0,1.0,,,vasqura02
+                      Anthony Volpe,22,us US,R,R,5 9,180,Apr 28 2001,1st,159,150,159,157,0,0,0,0,0,157,0,0,0,0,0,5,1,3.3,$720000,,volpean01
+Luke Weaver,29,us US,R,R,6 2,183,Aug 21 1993,8,3,3,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0.3,,,weavelu01
+Ryan Weber,32,us US,R,R,6 1,175,Aug 12 1990,9,8,0,0,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0.4,,,weberry01
+                      Greg Weissert,28,us US,R,R,6 2,235,Feb 4 1995,2,17,0,0,17,17,0,0,0,0,0,0,0,0,0,0,0,0,0.2,,,weissgr01
+Austin Wells,23,us US,L,R,6 2,220,Jul 12 1999,1st,19,18,19,19,0,19,0,0,0,0,0,0,0,0,0,1,0,0.1,,,wellsau01")
+```
+```{r}
+yankees23 <- as.data.frame(yankees23)
+#Filtering out departures for 2024
+yankees24 <- yankees23 |>
+  filter(Name %in% player)
+#head(yankees24)
+yankees24 <- yankees24 |> subset(, select = c(Name, Age, WAR))
+```
+Adding the additions
+
+```{r}
+added_players <- setdiff(player, yankees24$Name)
+
+additions <- list(
+Clayton_Andrews <- data.frame(
+  Name = "Clayton Andrews",
+  Age = 26,
+  WAR = -0.8),
+
+Clayton_Beeter <- data.frame(
+  Name = "Clayton Beeter",
+  Age = 24,
+  WAR = 0
+),
+Scott_Effross <- data.frame(
+  Name = "Scott Effross",
+  Age = 28,
+  WAR = 1.2
+),
+Caleb_Ferguson <- data.frame(
+  Name = "Caleb Ferguson",
+  Age = 26,
+  WAR = 0.1
+),
+Luis_Gil <- data.frame(
+  Name = "Luis Gil",
+  Age = 24,
+  WAR = 0.6 #Did not play in 23, using career war since he did not play much in 22 either.
+),
+Victor_Gonzalez <- data.frame(
+  Name = "Victor Gonzalez",
+  Age = 27,
+  WAR = 0.3
+),
+Mckinley_Moore <- data.frame(
+  Name = "Mckinley Moore",
+  Age = 25,
+  WAR = -0.3
+),
+Cody_Morris <- data.frame(
+  Name = "Cody Morris",
+  Age = 26,
+  WAR = 0
+),
+Cody_Poteet <- data.frame(
+  Name = "Cody Poteet",
+  Age = 28,
+  WAR = 0.3 #2022
+),
+Marcus_Stroman <- data.frame(
+  Name = "Marcus Stroman",
+  Age = 32,
+  WAR = 1.6
+),
+Juan_Soto <- data.frame(
+  Name = "Juan Soto",
+  Age = 24,
+  WAR = 5.5
+),
+Lou_Trivino <- data.frame(
+  Name = "Lou Trivino",
+  Age = 31,
+  WAR = 0.5
+),
+Carlos_Narvaez <- data.frame(
+  Name = "Carlos Narvaez",
+  Age = 24,
+  WAR = 0
+),
+Agustin_Ramirez <- data.frame(
+  Name = "Agustin Ramirez",
+  Age = 21,
+  WAR = 0
+),
+Jorbit_Vivas <- data.frame(
+  Name = "Jorbit Vivas",
+  Age = 22,
+  WAR = 0
+),
+Trent_Grisham <- data.frame(
+  Name = "Trent Grisham",
+  Age = 26,
+  WAR = 2.0
+),
+Alex_Verdugo <- data.frame(
+  Name = "Alex Verdugo",
+  Age = 27,
+  WAR = 2.6
+),
+Jahmai_Jones <- data.frame(
+  Name = "Jahmai Jones",
+  Age = 25,
+  WAR = 0
+))
+
+```
+Let's combine them and move the data to the year 2024.
+
+```{r}
+additions <- do.call(rbind, additions)
+yankees24 <- rbind(yankees24, additions)
+```
+Clean up
+
+```{r}
+yankees24$Age <- yankees24$Age + 1
+yankees24$WAR23 <- yankees24$WAR
+head(yankees24)
+```
+```{r}
+mu_theta_under_27 <- 1.25
+sigma_theta_under_27 <- 0.25
+mu_theta_27_32 <- 1
+sigma_theta_27_32 <- 0.2
+mu_theta_33_ <- 0.8
+sigma_theta_33_ <- 0.3
+
+
+
+yankees24 <- yankees24 %>%
+  mutate(
+    theta = if_else(Age < 27, rnorm(n(), mean = mu_theta_under_27, sd = sigma_theta_under_27),
+                    if_else(Age >= 27 & Age <= 32, rnorm(n(), mean = mu_theta_27_32, sd = sigma_theta_27_32),
+                            if_else(Age >= 33, rnorm(n(), mean = mu_theta_33_, sd = sigma_theta_33_), 0))),
+    y2y_flux = rnorm(n(), 0, 1),
+    WAR = (WAR23 + y2y_flux) * theta
+  )
+
+```
+
+
+
+```{r}
+simulations <- numeric(10^5)
+sims <- 10^5
+replacement <- 52 # Baseball Reference's replacement level team should win approximately 52 games
+
+for (i in 1:sims) {
+  yankees24 <- yankees24 %>% #I expect this loop is inefficient
+    mutate(
+      theta = if_else(Age < 27, rnorm(n(), mean = mu_theta_under_27, sd = sigma_theta_under_27),
+                      if_else(Age >= 27 & Age <= 32, rnorm(n(), mean = mu_theta_27_32, sd = sigma_theta_27_32),
+                              if_else(Age >= 33, rnorm(n(), mean = mu_theta_33_, sd = sigma_theta_33_), 0))),
+      y2y_flux = rnorm(n(), 0, 1),
+      WAR = (WAR23 + y2y_flux) * theta
+    )
+  
+  simulations[i] <- sum(yankees24$WAR) + replacement
+}
+paste("Average number of wins per simulation:", round(mean(simulations)))
+paste("Median number of wins per simulation:", round(median(simulations)))
+summary(simulations)
+```
+```{r}
+sims <- data.frame(simulations)
+ggplot(sims, aes(x = simulations)) + geom_histogram(color = 'white', fill = "navy") + labs(title = "Distribution of 2024 Yankees wins after 100000 simulations", x = "Wins")
+
+ggplot(sims, aes(x = simulations)) + geom_density(fill = 'navy', alpha = 0.3)
+```
+```{r}
+#can use this to determine the probability of the team winning that number of games, for example, 100 here.
+sims |>
+  summarize(by = mean(simulations >= 100))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
