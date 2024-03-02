@@ -1,0 +1,226 @@
+---
+title: "STL Win Projection Model"
+author: "Justin Dritschel"
+date: "2024-03-01"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(tidyverse)
+```
+
+```{r}
+player <- c("Ryan Fernandez", "Giovanny Gallegos","Kyle Gibson", "Sonny Gray", "Ryan Helsley","John King","Andrew Kittredge","Adam Kloffenstein","Matthew Liberatore","Lance Lynn","Steven Matz","Kenyan Middleton","Miles Mikolas", "Riley O'Brien", "Andre Pallante", "Sem Robberse", "Nick Robertson", "Drew Rom", "JoJo Romero","Zack Thompson","Willson Contreras","Ivan Herrera","Pedro Pages", "Nolan Arenado","Luken Baker","Brandon Crawford","Brendan Donovan","Tommy Edman","Jose Fermin","Paul Goldschmidt","Nolan Gorman","Alfonso Rivas","Masyn Winn","Jared Young", "Alec Burleson","Dylan Carlson","Lars Nootbaar", "Michael Siani", "Jordan Walker","Matt Carpenter")
+length(player)
+```
+
+```{r}
+cardinals23 <- read_csv("Name,Age,,B,T,Ht,Wt,DoB,Yrs,G,GS,Batting,Defense,P,C,1B,2B,3B,SS,LF,CF,RF,OF,DH,PH,PR,WAR,Salary,,Name-additional
+                        Nolan Arenado,32,us US,R,R,6 2,215,Apr 16 1991,11,144,143,144,128,0,0,0,0,128,0,0,0,0,0,15,1,0,2.4,$35000000,All-Star,arenano01
+Luken Baker,26,us US,R,R,6 4,285,Mar 10 1997,1st,33,23,33,12,0,0,12,0,0,0,0,0,0,0,17,5,0,-0.4,,,bakerlu01
+Jacob Barnes,33,us US,R,R,6 2,231,Apr 14 1990,8,13,0,0,13,13,0,0,0,0,0,0,0,0,0,0,0,0,-0.2,,,barneja01
+                        Tres Barrera,28,us US,R,R,6 0,215,Sep 15 1994,4,6,0,6,6,0,6,0,0,0,0,0,0,0,0,0,1,0,0.0,,,barretr01
+Alec Burleson,24,us US,L,L,6 2,225,Nov 25 1998,2,107,80,107,71,2,0,17,0,0,0,44,0,13,54,24,24,0,-0.8,$721450,,burleal01
+Génesis Cabrera,26,do DO,L,L,6 2,180,Oct 10 1996,5,32,0,2,32,32,0,0,0,0,0,0,0,0,0,0,0,0,0.0,$950000,,cabrege01
+                        Dylan Carlson,24,us US,B,L,6 2,200,Oct 23 1998,4,76,59,76,72,0,0,0,0,0,0,5,50,20,72,3,6,1,0.5,$742400,,carlsdy01
+Willson Contreras,31,ve VE,R,R,6 1,240,May 13 1992,8,125,119,125,97,0,97,0,0,0,0,0,0,0,0,30,5,0,3.4,$10000000,,contrwi01
+Paul DeJong,29,us US,R,R,6 0,205,Aug 2 1993,7,81,77,81,81,0,0,0,0,0,81,0,0,0,0,0,1,0,0.7,,,dejonpa01
+                        Brendan Donovan,26,de DE,L,R,6 1,210,Jan 16 1997,2,95,81,95,75,0,0,14,34,6,1,21,0,9,26,18,10,1,1.9,$728600,,donovbr01
+Tommy Edman,28,us US,B,R,5 10,193,May 9 1995,5,137,129,137,135,0,0,0,51,0,48,0,42,8,49,0,5,0,2.1,$4200000,,edmanto01
+Jose Fermin,24,do DO,R,R,5 9,198,Mar 29 1999,1st,21,16,21,18,0,0,0,10,8,0,0,0,0,0,1,1,2,0.1,,,fermijo01
+                        Jack Flaherty,27,us US,R,R,6 4,225,Oct 15 1995,7,20,20,0,20,20,0,0,0,0,0,0,0,0,0,0,0,0,1.4,$5400000,,flaheja01
+Giovanny Gallegos,31,mx MX,R,R,6 2,205,Aug 14 1991,7,56,0,0,56,56,0,0,0,0,0,0,0,0,0,0,0,0,0.3,$4750000,,gallegi01
+Paul Goldschmidt,35,us US,R,R,6 3,225,Sep 10 1987,13,154,154,154,133,0,0,133,0,0,0,0,0,0,0,21,0,0,3.4,$26000000,,goldspa01
+                        Nolan Gorman,23,us US,L,R,6 1,225,May 10 2000,2,119,106,119,88,0,0,0,75,18,0,0,0,0,0,27,10,0,2.4,$726950,,gormano01
+Ryan Helsley,28,us US,R,R,6 2,235,Jul 18 1994,5,33,0,1,33,33,0,0,0,0,0,0,0,0,0,0,0,0,1.4,$2150000,,helslry01
+Ivan Herrera,23,pa PA,R,R,5 11,220,Jun 1 2000,2,13,10,13,13,0,13,0,0,0,0,0,0,0,0,0,0,0,0.3,,,herreiv01
+                        Jordan Hicks,26,us US,R,R,6 2,220,Sep 6 1996,5,40,0,0,40,40,0,0,0,0,0,0,0,0,0,0,0,0,0.3,$1837500,,hicksjo03
+Dakota Hudson,28,us US,R,R,6 5,215,Sep 15 1994,6,18,12,0,18,18,0,0,0,0,0,0,0,0,0,0,0,0,0.5,$2650000,,hudsoda02
+John King,28,us US,L,L,6 2,215,Sep 14 1994,4,20,0,0,20,20,0,0,0,0,0,0,0,0,0,0,0,0,0.9,,,kingjo01
+                        Andrew Knizner,28,us US,R,R,6 1,225,Feb 3 1995,5,70,63,70,69,0,68,1,0,0,0,0,0,0,0,1,2,1,1.0,$1100000,,kniznan01
+Casey Lawrence,35,us US,R,R,6 0,180,Oct 28 1987,4,15,0,0,15,15,0,0,0,0,0,0,0,0,0,0,0,0,-0.3,,,lawreca01
+Kyle Leahy,26,us US,B,R,6 5,225,Jun 4 1997,1st,3,0,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,-0.3,,,leahyky01
+                        Matthew Liberatore,23,us US,L,L,6 4,215,Nov 6 1999,2,22,11,0,22,22,0,0,0,0,0,0,0,0,0,0,0,0,-0.3,,,liberma01
+Irving Lopez,28,mx MX,L,R,5 7,175,Jun 30 1995,1st,5,3,5,5,0,0,0,2,3,0,0,0,0,0,0,1,1,-0.4,,,lopezir01
+Steven Matz,32,us US,R,L,6 2,205,May 29 1991,9,25,17,0,25,25,0,0,0,0,0,0,0,0,0,0,0,0,1.7,$10500000,,matzst01
+                        Óscar Mercado,28,co CO,R,R,6 2,197,Dec 16 1994,5,20,7,20,17,0,0,0,0,0,0,7,4,8,17,3,1,2,-0.2,,,mercaos01
+Miles Mikolas,34,us US,R,R,6 4,230,Aug 23 1988,8,35,35,0,35,35,0,0,0,0,0,0,0,0,0,0,0,0,1.9,$18750000,,mikolmi01
+Jordan Montgomery,30,us US,L,L,6 6,228,Dec 27 1992,7,21,21,0,21,21,0,0,0,0,0,0,0,0,0,0,0,0,2.1,$10000000,,montgjo01
+                        Taylor Motter,33,us US,R,R,6 1,195,Sep 18 1989,6,29,21,29,28,0,0,1,14,12,3,0,0,1,1,1,3,0,-0.6,$775000,,motteta01
+James Naile,30,us US,R,R,6 4,185,Feb 8 1993,2,10,0,1,10,10,0,0,0,0,0,0,0,0,0,0,0,0,-0.6,,,naileja01
+Packy Naughton,27,us US,R,L,6 2,200,Apr 16 1996,3,4,0,0,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0.2,$728750,,naughpa01
+                        Lars Nootbaar,25,us US,L,R,6 3,205,Sep 8 1997,3,117,112,117,114,0,0,0,0,0,0,24,73,34,114,2,4,0,3.3,$732400,,nootbla01
+Tyler ONeill,28,ca CA,R,R,5 11,200,Jun 22 1995,6,72,59,72,70,0,0,0,0,0,0,58,13,0,70,1,6,1,0.3,$4950000,,oneilty01
+Richie Palacios,26,us US,L,R,5 10,180,May 16 1997,2,32,25,32,27,0,0,0,1,0,0,17,8,2,26,3,4,2,0.5,,,palacri01
+Andre Pallante,24,us US,R,R,6 0,215,Sep 18 1998,2,62,0,0,62,62,0,0,0,0,0,0,0,0,0,0,0,0,0.1,$728600,,pallaan01
+                        Juniel Querecuto,30,ve VE,B,R,5 9,195,Sep 19 1992,2,9,5,9,8,0,0,2,2,5,0,0,0,0,0,0,0,1,-0.2,,,quereju01
+Drew Rom,23,us US,L,L,6 2,215,Dec 15 1999,1st,8,8,0,8,8,0,0,0,0,0,0,0,0,0,0,0,0,-1.0,,,romdr01
+JoJo Romero,26,us US,L,L,5 11,215,Sep 9 1996,4,27,0,1,27,27,0,0,0,0,0,0,0,0,0,0,0,0,0.6,,,romerjo01
+                        Michael Siani,23,us US,L,L,6 1,195,Jul 16 1999,2,5,0,5,3,0,0,0,0,0,0,0,3,0,3,2,0,2,-0.2,,,sianimi01
+Chris Stratton,32,us US,R,R,6 2,205,Aug 22 1990,8,42,0,0,42,42,0,0,0,0,0,0,0,0,0,0,0,0,0.1,$2800000,,stratch01
+Andrew Suárez,30,us US,L,L,6 0,202,Sep 11 1992,4,13,0,0,13,13,0,0,0,0,0,0,0,0,0,0,0,0,-0.6,,,suarean01
+                        Ryan Tepera,35,us US,R,R,6 1,195,Nov 3 1987,9,2,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,-0.1,,,teperry01
+Zack Thompson,25,us US,L,L,6 2,215,Oct 28 1997,2,25,9,0,25,25,0,0,0,0,0,0,0,0,0,0,0,0,0.6,$725000,,thompza02
+Drew VerHagen,32,us US,R,R,6 6,230,Oct 22 1990,8,60,0,0,60,60,0,0,0,0,0,0,0,0,0,0,0,0,0.5,$3000000,,verhadr01
+                        Adam Wainwright,41,us US,R,R,6 7,230,Aug 30 1981,18,23,21,2,21,21,0,0,0,0,0,0,0,0,0,1,2,0,-2.0,$17500000,,wainwad01
+Jordan Walker,21,us US,R,R,6 6,250,May 22 2002,1st,117,115,117,110,0,0,0,0,0,0,19,0,93,110,7,1,1,-0.1,,,walkejo02
+Masyn Winn,21,us US,R,R,5 11,185,Mar 21 2002,1st,37,36,37,37,0,0,0,0,0,37,0,0,0,0,0,0,0,-0.6,,,winnma01
+                        Jake Woodford,26,us US,R,R,6 4,215,Oct 28 1996,4,15,8,0,15,15,0,0,0,0,0,0,0,0,0,0,0,0,-0.4,$739800,,woodfja01
+Juan Yepez,25,ve VE,R,R,6 1,235,Feb 19 1998,2,28,15,28,12,0,0,0,0,0,0,9,0,3,12,11,11,0,-0.7,,,yepezju01
+Guillermo Zuñiga,24,co CO,R,R,6 5,230,Oct 10 1998,1st,2,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0.0,,,zuniggu01")
+```
+Cleaning
+```{r}
+cardinals23 <- as.data.frame(cardinals23)
+#Filtering out departures for 2024
+cardinals24 <- cardinals23 |>
+  filter(Name %in% player)
+#head(cardinals24)
+cardinals24 <- cardinals24 |> subset(, select = c(Name, Age, WAR))
+added_players <- list(setdiff(player, cardinals24$Name))
+print(added_players)
+```
+Looking for the additions now:
+```{r}
+for(i in added_players){
+  additions <- data.frame(
+  Name = i,
+  Age = NA,
+  WAR = NA
+)
+}
+c <- 2:3
+additions[1, 2:3] <- c(25, 0)
+additions[2, c] <- c(35,0.9)
+additions[3,c] <- c(33, 5.3)
+additions[4, c] <- c(33, 0.3)
+additions[5, c] <- c(22, 0)
+additions[6,c] <- c(36, -0.8)
+additions[7,c] <- c(29, 1.0)
+additions[8,c] <- c(28, -0.1)
+additions[9,c] <- c(21,0)
+additions[10,c] <- c(24, -0.5)
+additions[11,c] <- c(24, 0)
+additions[12, c] <- c(36, -1.3)
+additions[13, c] <- c(27, 0.3)
+additions[14,c] <- c(27, -0.1)
+additions[15,c] <- c(37, -0.3)
+
+cardinals24 <- rbind(cardinals24, additions) #Be sure to only run once, else you have to re-run the whole program.
+tail(cardinals24)
+```
+
+```{r}
+cardinals24$Age <- cardinals24$Age + 1 #Since age is for the 2023 season
+cardinals24$WAR23 <- cardinals24$WAR #Preparing our simulated WAR for 2024
+head(cardinals24)
+```
+Building the model (See NYM Model for more relevant information on the model construction):
+```{r}
+mu_theta_under_27 <- 1.25
+sigma_theta_under_27 <- 0.25
+mu_theta_27_32 <- 1
+sigma_theta_27_32 <- 0.2
+mu_theta_33_ <- 0.8
+sigma_theta_33_ <- 0.3
+
+
+
+cardinals24 <- cardinals24 %>%
+  mutate(
+    theta = if_else(Age < 27, rnorm(n(), mean = mu_theta_under_27, sd = sigma_theta_under_27),
+                    if_else(Age >= 27 & Age <= 32, rnorm(n(), mean = mu_theta_27_32, sd = sigma_theta_27_32),
+                            if_else(Age >= 33, rnorm(n(), mean = mu_theta_33_, sd = sigma_theta_33_), 0))),
+    y2y_flux = rnorm(n(), 0, 1),
+    WAR = (WAR23 + y2y_flux) * theta
+  )
+```
+
+Running the simulations:
+
+```{r}
+simulations <- numeric(10^5)
+sims <- 10^5
+replacement <- 52 # Baseball Reference's replacement level team should win approximately 52 games
+fangraphs_str_of_schedule_proj <- .496
+Str_Schedule <- 82 - (162 * fangraphs_str_of_schedule_proj) + rnorm(1, 0, .25) #Error term reflecting uncertainty of upcoming season
+for (i in 1:sims) {
+  cardinals24 <- cardinals24 %>% #I expect this loop is inefficient
+    mutate(
+      theta = if_else(Age < 27, rnorm(n(), mean = mu_theta_under_27, sd = sigma_theta_under_27),
+                      if_else(Age >= 27 & Age <= 32, rnorm(n(), mean = mu_theta_27_32, sd = sigma_theta_27_32),
+                              if_else(Age >= 33, rnorm(n(), mean = mu_theta_33_, sd = sigma_theta_33_), 0))),
+      y2y_flux = rnorm(n(), 0, 1),
+      WAR = (WAR23 + y2y_flux) * theta
+    )
+  
+  simulations[i] <- sum(cardinals24$WAR) + replacement + Str_Schedule
+}
+paste("Average number of wins per simulation:", round(mean(simulations)))
+paste("Median number of wins per simulation:", round(median(simulations)))
+summary(simulations)
+```
+Visualize the Distribution:
+```{r}
+sims <- data.frame(simulations)
+ggplot(sims, aes(x = simulations)) + geom_histogram(color = 'gold', fill = "red") + labs(title = "Distribution of 2024 Cardinals wins after 100000 simulations", x = "Wins")
+
+ggplot(sims, aes(x = simulations)) + geom_density(fill = 'red', alpha = 0.3)
+```
+
+
+```{r}
+#can use this to determine the probability of the team winning that number of games, for example, 100 here.
+sims |>
+  summarize(by = mean(simulations >= 100))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

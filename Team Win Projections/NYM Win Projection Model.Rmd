@@ -267,7 +267,8 @@ What we are really getting at here is whether I can accurately model year to yea
 simulations <- numeric(10^5)
 sims <- 10^5
 replacement <- 52 # Baseball Reference's replacement level team should win approximately 52 games
-
+fangraphs_str_of_schedule_proj <- .501
+Str_Schedule <- 82 - (162 * fangraphs_str_of_schedule_proj) + rnorm(1, 0, .25)
 for (i in 1:sims) { #I expect that this loop is inefficient.
   mets24 <- mets24 %>%
     mutate(
