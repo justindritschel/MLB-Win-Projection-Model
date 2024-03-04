@@ -142,11 +142,11 @@ cardinals24 <- cardinals24 %>%
 Running the simulations:
 
 ```{r}
-simulations <- numeric(10^5)
+simulations_cards <- numeric(10^5)
 sims <- 10^5
 replacement <- 52 # Baseball Reference's replacement level team should win approximately 52 games
 fangraphs_str_of_schedule_proj <- .496
-Str_Schedule <- 82 - (162 * fangraphs_str_of_schedule_proj) + rnorm(1, 0, .25) #Error term reflecting uncertainty of upcoming season
+Str_Schedule <- 82 - (162 * fangraphs_str_of_schedule_proj)
 for (i in 1:sims) {
   cardinals24 <- cardinals24 %>% #I expect this loop is inefficient
     mutate(
@@ -157,25 +157,25 @@ for (i in 1:sims) {
       WAR = (WAR23 + y2y_flux) * theta
     )
   
-  simulations[i] <- sum(cardinals24$WAR) + replacement + Str_Schedule
+  simulations_cards[i] <- sum(cardinals24$WAR) + replacement + Str_Schedule
 }
-paste("Average number of wins per simulation:", round(mean(simulations)))
-paste("Median number of wins per simulation:", round(median(simulations)))
-summary(simulations)
+paste("Average number of wins per simulation:", round(mean(simulations_cards)))
+paste("Median number of wins per simulation:", round(median(simulations_cards)))
+summary(simulations_cards)
 ```
 Visualize the Distribution:
 ```{r}
-sims <- data.frame(simulations)
-ggplot(sims, aes(x = simulations)) + geom_histogram(color = 'gold', fill = "red") + labs(title = "Distribution of 2024 Cardinals wins after 100000 simulations", x = "Wins")
+sims_cards <- data.frame(simulations)
+ggplot(sims_cards, aes(x = simulations_cards)) + geom_histogram(color = 'gold', fill = "red") + labs(title = "Distribution of 2024 Cardinals wins after 100000 simulations", x = "Wins")
 
-ggplot(sims, aes(x = simulations)) + geom_density(fill = 'red', alpha = 0.3)
+ggplot(sims_cards, aes(x = simulations_cards)) + geom_density(fill = 'red', alpha = 0.3)
 ```
 
 
 ```{r}
 #can use this to determine the probability of the team winning that number of games, for example, 100 here.
-sims |>
-  summarize(by = mean(simulations >= 100))
+sims_cards |>
+  summarize(by = mean(simulations_cards >= 100))
 ```
 
 

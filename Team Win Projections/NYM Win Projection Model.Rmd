@@ -264,11 +264,11 @@ mets24 <- mets24 %>%
 What we are really getting at here is whether I can accurately model year to year fluctuations in war. Probably not, but I think I can get it reasonably right.
 
 ```{r}
-simulations <- numeric(10^5)
+simulations_mets <- numeric(10^5)
 sims <- 10^5
 replacement <- 52 # Baseball Reference's replacement level team should win approximately 52 games
 fangraphs_str_of_schedule_proj <- .501
-Str_Schedule <- 82 - (162 * fangraphs_str_of_schedule_proj) + rnorm(1, 0, .25)
+Str_Schedule <- 82 - (162 * fangraphs_str_of_schedule_proj)
 for (i in 1:sims) { #I expect that this loop is inefficient.
   mets24 <- mets24 %>%
     mutate(
@@ -279,19 +279,19 @@ for (i in 1:sims) { #I expect that this loop is inefficient.
       WAR = (WAR23 + y2y_flux) * theta
     )
   
-  simulations[i] <- round(sum(mets24$WAR) + replacement)
+  simulations_mets[i] <- round(sum(mets24$WAR) + replacement)
 }
-paste("Average number of wins per simulation:", round(mean(simulations)))
-paste("Median number of wins per simulation:", round(median(simulations)))
+paste("Average number of wins per simulation:", round(mean(simulations_mets)))
+paste("Median number of wins per simulation:", round(median(simulations_mets)))
 
-summary(simulations)
+summary(simulations_mets)
 ```
 Not too bad compared to Fangraph's prediction of 80 wins.
 
 ```{r}
-sims <- data.frame(simulations)
-ggplot(sims, aes(x = simulations)) + geom_histogram(color = 'orange', fill = "blue") + labs(title = "Distribution of 2024 Mets wins after 10000 simulations", x = "Wins")
-ggplot(sims, aes(x = simulations)) + geom_density(fill = 'orange', alpha = 0.3)
+sims_mets <- data.frame(simulations)
+ggplot(sims_mets, aes(x = simulations_mets)) + geom_histogram(color = 'orange', fill = "blue") + labs(title = "Distribution of 2024 Mets wins after 10000 simulations", x = "Wins")
+ggplot(sims_mets, aes(x = simulations_mets)) + geom_density(fill = 'orange', alpha = 0.3)
 ```
 
 ```{r}
