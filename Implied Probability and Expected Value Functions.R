@@ -10,8 +10,9 @@ odds_to_prob <- function(odds) {
 }
 
 
-expected_value_of_bet <- function( model_prob, bet = 100, imp_prob){
-  potential_winnings <- bet / imp_prob
-  paste("Expected value of your bet",((potential_winnings * model_prob) - bet))
+expected_value_of_bet <- function(model_prob, bet = 100, imp_prob){
+  potential_winnings <- (bet / imp_prob) - bet
+  paste("Expected value of your bet",(potential_winnings * model_prob) - (bet * (1-model_prob)))
+  
 }
 #Where model_prob is defined as the model's probability of winning x number of games
