@@ -245,8 +245,15 @@ ggplot(sims_yankees, aes(x = simulations_yankees)) + geom_density(fill = 'navy',
 ```
 ```{r}
 #can use this to determine the probability of the team winning that number of games, for example, 100 here.
-sims_yankees |>
-  summarize(by = mean(simulations_yankees >= 100))
+model_prob <- sims_yankees |>
+  summarize(by = mean(simulations_yankees <= 93))
+print(model_prob)
+
+
+
+
+odds_to_prob(-115) #DK Sportsbook Odds
+expected_value_of_bet(model_prob = model_prob, imp_prob = imp_prob)
 ```
 
 
