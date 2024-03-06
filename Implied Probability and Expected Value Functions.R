@@ -4,7 +4,7 @@ odds_to_prob <- function(odds) {
   if (odds > 0) {
     imp_prob <<- odds / (odds + 100)
   } else {
-    imp_prob <<- 100 / (abs(odds) + 100)
+    imp_prob <<- 1 - (100 / (abs(odds) + 100))
   }
   paste("Implied Probability of the Sportsbook odds:", imp_prob)
 }
