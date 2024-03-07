@@ -79,7 +79,7 @@ yankees23 <- as.data.frame(yankees23)
 yankees24 <- yankees23 |>
   filter(Name %in% player)
 #head(yankees24)
-yankees24 <- yankees24 |> subset(, select = c(Name, Age, WAR))
+yankees24 <- yankees24 |> subset(select = c(Name, Age, WAR))
 ```
 Adding the additions
 
@@ -190,8 +190,17 @@ Clean up
 ```{r}
 yankees24$Age <- yankees24$Age + 1
 yankees24$WAR23 <- yankees24$WAR
+```
+```{r}
+yankees24 <- yankees24 %>%
+  mutate(WAR23 = ifelse(WAR23 < 0 & Age < 27, 0, WAR23))
+ #To reflect that sometimes rookies may have poor first seasons that may not be reflective of their abilities
+yankees24 <- yankees24 |>
+  mutate(WAR23 = ifelse(WAR < 0 & Age >= 33, WAR * 1.2, WAR))  #This is an imperfect temporary work around to the same problem but with older players, whose WAR the model is overestimating
+
 head(yankees24)
 ```
+
 ```{r}
 mu_theta_under_27 <- 1.25
 sigma_theta_under_27 <- 0.25
@@ -231,7 +240,7 @@ for (i in 1:sims) {
       WAR = (WAR23 + y2y_flux) * theta
     )
   
-  simulations_yankees[i] <- sum(yankees24$WAR) + replacement
+  simulations_yankees[i] <- sum(yankees24$WAR) + replacement + Str_Schedule
 }
 paste("Average number of wins per simulation:", round(mean(simulations_yankees)))
 paste("Median number of wins per simulation:", round(median(simulations_yankees)))

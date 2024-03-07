@@ -234,9 +234,16 @@ mets24$WAR23 <- mets24$WAR
 ```
 Let's See:
 ```{r}
+mets24 <- mets24 %>%
+  mutate(WAR23 = ifelse(WAR23 < 0 & Age < 27, 0, WAR23))
+ #To reflect that sometimes rookies may have poor first seasons that may not be reflective of their abilities
+
+mets24 <- mets24 |>
+  mutate(WAR23 = ifelse(WAR < 0 & Age >= 33, WAR * 1.2, WAR))  #This is an imperfect temporary work around to the same problem but with older players, whose WAR the model is overestimating.
+
 head(mets24)
 ```
-Alright, let's think through the more difficult theoretical stuff now:
+Alright, let's think through the more interesting theoretical stuff now:
 Theta will be a parameter that describes how intensely correlated I think WAR is from year to year for players of different age groups (in an attempt to account for aging curves), as well as a year to year flux in performance that is normally distributed with mean zero and standard deviation one, to account for particularly hot or particularly poor years. This model obviously relies heavily on Baseball Reference's model for WAR and the potential for baked in measurement error thereof. It tries to account for this by adding randomness. Theoretically, after the season is over, I should have a better idea about the correlation of WAR from season to season. Maybe I am greatly overstating the relationship in this model, but I am curious to see its performance.
 
 ```{r}
@@ -279,7 +286,7 @@ for (i in 1:sims) { #I expect that this loop is inefficient.
       WAR = (WAR23 + y2y_flux) * theta
     )
   
-  simulations_mets[i] <- round(sum(mets24$WAR) + replacement)
+  simulations_mets[i] <- round(sum(mets24$WAR) + replacement + Str_Schedule)
 }
 paste("Average number of wins per simulation:", round(mean(simulations_mets)))
 paste("Median number of wins per simulation:", round(median(simulations_mets)))
@@ -289,14 +296,18 @@ summary(simulations_mets)
 Not too bad compared to Fangraph's prediction of 80 wins.
 
 ```{r}
-sims_mets <- data.frame(simulations)
+sims_mets <- data.frame(simulations_mets)
 ggplot(sims_mets, aes(x = simulations_mets)) + geom_histogram(color = 'orange', fill = "blue") + labs(title = "Distribution of 2024 Mets wins after 10000 simulations", x = "Wins")
 ggplot(sims_mets, aes(x = simulations_mets)) + geom_density(fill = 'orange', alpha = 0.3)
 ```
 
 ```{r}
-sims |>
-  summarize(by = mean(simulations > 84))
+model_prob <- sims_mets |>
+  summarize(by = mean(simulations_mets <= 82))
+print(model_prob)
+
+odds_to_prob(-110) #DK Sportsbook Odds, returns imp_prob
+expected_value_of_bet(model_prob = model_prob, imp_prob = imp_prob)
 ```
 
 

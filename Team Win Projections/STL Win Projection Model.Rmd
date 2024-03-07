@@ -79,7 +79,7 @@ cardinals23 <- as.data.frame(cardinals23)
 cardinals24 <- cardinals23 |>
   filter(Name %in% player)
 #head(cardinals24)
-cardinals24 <- cardinals24 |> subset(, select = c(Name, Age, WAR))
+cardinals24 <- cardinals24 |> subset(select = c(Name, Age, WAR))
 added_players <- list(setdiff(player, cardinals24$Name))
 print(added_players)
 ```
@@ -116,8 +116,16 @@ tail(cardinals24)
 ```{r}
 cardinals24$Age <- cardinals24$Age + 1 #Since age is for the 2023 season
 cardinals24$WAR23 <- cardinals24$WAR #Preparing our simulated WAR for 2024
+```
+```{r}
+cardinals24 <- cardinals24 %>%
+  mutate(WAR23 = ifelse(WAR23 < 0 & Age < 27, 0, WAR23))
+ #To reflect that sometimes rookies may have poor first seasons that may not be reflective of their abilities
+cardinals24 <- cardinals24 |>
+  mutate(WAR23 = ifelse(WAR < 0 & Age >= 33, WAR * 1.2, WAR)) #This is an imperfect temporary work around to the same problem but with older players, whose WAR the model is overestimating.
 head(cardinals24)
 ```
+
 Building the model (See NYM Model for more relevant information on the model construction):
 ```{r}
 mu_theta_under_27 <- 1.25
