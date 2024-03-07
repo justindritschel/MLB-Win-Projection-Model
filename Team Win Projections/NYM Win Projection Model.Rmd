@@ -88,7 +88,7 @@ mets23 <- as.data.frame(mets23)
 mets24 <- mets23 |>
   filter(Name %in% player)
 #head(mets24)
-mets24 <- mets24 |> subset(, select = c(Name, Age, WAR, Yrs))
+mets24 <- mets24 |> subset(select = c(Name, Age, WAR, Yrs))
 
 ```
 Will have to come back to this function, can't seem to get it to work.
@@ -275,7 +275,7 @@ simulations_mets <- numeric(10^5)
 sims <- 10^5
 replacement <- 52 # Baseball Reference's replacement level team should win approximately 52 games
 fangraphs_str_of_schedule_proj <- .501
-Str_Schedule <- 82 - (162 * fangraphs_str_of_schedule_proj)
+Str_Schedule <- 81 - (162 * fangraphs_str_of_schedule_proj)
 for (i in 1:sims) { #I expect that this loop is inefficient.
   mets24 <- mets24 %>%
     mutate(

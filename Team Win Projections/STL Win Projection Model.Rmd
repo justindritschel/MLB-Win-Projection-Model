@@ -154,7 +154,7 @@ simulations_cards <- numeric(10^5)
 sims <- 10^5
 replacement <- 52 # Baseball Reference's replacement level team should win approximately 52 games
 fangraphs_str_of_schedule_proj <- .496
-Str_Schedule <- 82 - (162 * fangraphs_str_of_schedule_proj)
+Str_Schedule <- 81 - (162 * fangraphs_str_of_schedule_proj)
 for (i in 1:sims) {
   cardinals24 <- cardinals24 %>% #I expect this loop is inefficient
     mutate(
