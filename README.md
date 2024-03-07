@@ -5,3 +5,5 @@ This project is nothing that is terribly fancy, but it gives me another opportun
 I will update this with more information as I continue to flesh out the project.
 
 The Implied Probability and Expected Value script sources in functions to calculate expected values on bets from sportsbooks based on the model's outputs.
+
+Preliminary results lead me to think my model is underestimating the number of wins for each team.
