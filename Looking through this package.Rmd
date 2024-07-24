@@ -1,0 +1,178 @@
+---
+title: "Untitled"
+author: "Justin Dritschel"
+date: "2024-06-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(baseballr)
+library(lubridate)
+```
+
+```{r}
+players <- chadwick_player_lu()
+```
+
+
+
+```{r}
+gameids <- mlb_game_pks("2021-09-11", level_ids = 1)
+
+print(gameids[, c(1,50,42,40,32)])
+```
+
+
+```{r}
+bref_daily_batter(t1 = "2024-06-01", t2 = "2024-06-03")
+```
+
+
+Let's see if I can pull every game from 2000 to today
+
+```{r}
+start_date <- ymd("2000-01-01") 
+
+end_date <- ymd("2024-06-25")
+  
+date_range <- seq(from = start_date, to = end_date, by = "day")
+
+date_range <- as.character(date_range)
+#date_range <- list(date_range)
+days <- list()
+  
+for (date in date_range){
+  mlb_game_pks(date = date, level_ids = 1)
+  
+  result <- mlb_game_pks(date = date, level_ids = 1)
+  days[[as.character(date)]] <- result
+}
+
+all_games <- bind_rows(days, .id = "date")
+```
+
+
+```{r}
+print(start_date)
+
+str(start_date)
+```
+```{r}
+mlb_game_pks(end_date, level_ids = 1)
+```
+
+```{r}
+library(lubridate)
+library(dplyr)
+
+# Define the start and end dates
+start_date <- ymd("2000-01-01")
+end_date <- ymd("2024-06-25")
+
+# Create a sequence of dates from start_date to end_date
+date_range <- seq(from = start_date, to = end_date, by = "day")
+
+# Convert the date_range to a list of strings
+date_range <- as.character(date_range)
+
+# Initialize an empty list to store the results
+days <- list()
+
+# Loop over each date in the date range
+for (date in date_range) {
+  tryCatch({
+    cat("Processing date:", date, "\n")
+    # Fetch data for the given date
+    result <- mlb_game_pks(date = date, level_ids = 1)
+    
+    # Debugging: Print the structure of the result
+    if (!is.null(result)) {
+      print(str(result))
+    } else {
+      cat("No result for date:", date, "\n")
+      next
+    }
+    
+    # Check if the result contains the expected structure
+    if ("dates" %in% names(result) && length(result$dates) > 0) {
+      games <- result$dates[[1]]$games
+      if (!is.null(games) && length(games) > 0) {
+        # Convert the list to a data frame
+        games_df <- do.call(rbind, lapply(games, as.data.frame))
+        # Add the date column to the data frame
+        games_df$date <- date
+        # Store the data frame in the list
+        days[[date]] <- games_df
+      } else {
+        cat("No games found for date:", date, "\n")
+      }
+    } else {
+      cat("No dates found in result for date:", date, "\n")
+    }
+  }, error = function(e) {
+    warning(paste("Error processing date:", date, ":", e$message))
+  })
+}
+
+# Combine all data frames in the list into one data frame
+if (length(days) > 0) {
+  final_df <- bind_rows(days, .id = "date")
+  # View the resulting combined data frame
+  print(final_df)
+} else {
+  print("No data was retrieved from the API.")
+}
+
+```
+Isolating the game pks to get lineups.
+```{r}
+game_pks <- all_games$game_pk
+```
+
+
+
+```{r}
+#batting_orders <- mlb_batting_orders(game_pks[1])
+all_games_needed <- all_games[, c(1,50,8,11,12,24,39,46,47,49, 56,57)]
+all_games_needed
+print(all_games[1,])
+print(batting_orders)
+
+
+```
+
+
+```{r}
+
+try(bref_daily_batter(t1="2015-05-10", t2="2015-06-20"))
+```
+
+
+```{r}
+start_date <- ymd("2000-01-01") 
+
+end_date <- ymd("2024-06-25")
+  
+date_range <- seq(from = start_date, to = end_date, by = "day")
+
+date_range <- as.character(date_range)
+#date_range <- list(date_range)
+days <- list()
+  
+for (date in date_range){
+  mlb_game_pks(date = date, level_ids = 1)
+  
+  result <- mlb_game_pks(date = date, level_ids = 1)
+  days[[as.character(date)]] <- result
+}
+
+all_games <- bind_rows(days, .id = "date")
+```
+```{r}
+  try(fg_batter_leaders(startseason = 2024, endseason = 2024))
+```
+
+
+
+
